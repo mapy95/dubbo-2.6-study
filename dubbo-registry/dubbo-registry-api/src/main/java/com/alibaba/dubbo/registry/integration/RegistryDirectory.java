@@ -192,6 +192,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
+    //当消费者监听的三个目录发生变化时，会执行这个方法
     @Override
     public synchronized void notify(List<URL> urls) {
         List<URL> invokerUrls = new ArrayList<URL>();
@@ -395,6 +396,10 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                     } else {
                         enabled = url.getParameter(Constants.ENABLED_KEY, true);
                     }
+                    /**
+                     * 这里的refer，会根据URL的开头(http?dubbo?)来判断要调用哪个协议处理方法
+                     * 在调用refer的时候，会先执行protocol的包装类 ProtocolFilterWrapper的refer方法，这里其实就是AOP的思想
+                     */
                     if (enabled) {
                         invoker = new InvokerDelegate<T>(protocol.refer(serviceType, url), url, providerUrl);
                     }
@@ -581,6 +586,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
+    //处理服务路由
     @Override
     public List<Invoker<T>> doList(Invocation invocation) {
         if (forbidden) {

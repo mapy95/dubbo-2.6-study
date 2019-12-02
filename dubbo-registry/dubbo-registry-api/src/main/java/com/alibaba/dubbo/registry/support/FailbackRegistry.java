@@ -134,6 +134,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         failedUnregistered.remove(url);
         try {
             // Sending a registration request to the server side
+            //在这里，根据注册中心来注册
             doRegister(url);
         } catch (Exception e) {
             Throwable t = e;
