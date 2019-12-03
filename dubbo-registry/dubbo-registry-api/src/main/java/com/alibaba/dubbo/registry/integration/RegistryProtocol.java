@@ -125,13 +125,16 @@ public class RegistryProtocol implements Protocol {
     }
 
     public void register(URL registryUrl, URL registedProviderUrl) {
+        //获取注册中心实例
         Registry registry = registryFactory.getRegistry(registryUrl);
+        //注册服务
         registry.register(registedProviderUrl);
     }
 
     @Override
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
         //export invoker
+        //导出服务，创建nettyServer
         final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker);
 
         URL registryUrl = getRegistryUrl(originInvoker);
@@ -146,6 +149,11 @@ public class RegistryProtocol implements Protocol {
         ProviderConsumerRegTable.registerProvider(originInvoker, registryUrl, registeredProviderUrl);
 
         if (register) {
+            /**
+             * 这里是真正的服务注册的逻辑
+             * registryUrl:是以zookeeper://ip:port
+             * registeredProviderUrl:是以协议开头的，dubbo://ip:port
+             */
             register(registryUrl, registeredProviderUrl);
             ProviderConsumerRegTable.getProviderWrapper(originInvoker).setReg(true);
         }
@@ -295,7 +303,9 @@ public class RegistryProtocol implements Protocol {
     }
 
     private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type, URL url) {
+        //这里new出来的就是服务目录(可以简单理解为本地缓存的目录)，这个目录要和zk注册中心进行同步，应该使用的是事件监听器来实现的
         RegistryDirectory<T> directory = new RegistryDirectory<T>(type, url);
+        //这里的registry就是注册中心的地址  zookeeper://127.0.0.1:2181/RegitryService?......
         directory.setRegistry(registry);
         directory.setProtocol(protocol);
         // all attributes of REFER_KEY
