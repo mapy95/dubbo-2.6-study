@@ -32,6 +32,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 /**
  * DubboNamespaceHandler
  *
+ * 这个类是来解析xml配置文件的，将每个配置映射为后面对应的bean
  * @export
  */
 public class DubboNamespaceHandler extends NamespaceHandlerSupport {
@@ -49,6 +50,7 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser("provider", new DubboBeanDefinitionParser(ProviderConfig.class, true));
         registerBeanDefinitionParser("consumer", new DubboBeanDefinitionParser(ConsumerConfig.class, true));
         registerBeanDefinitionParser("protocol", new DubboBeanDefinitionParser(ProtocolConfig.class, true));
+        //服务暴露的入口，就在ServiceBean中
         registerBeanDefinitionParser("service", new DubboBeanDefinitionParser(ServiceBean.class, true));
         registerBeanDefinitionParser("reference", new DubboBeanDefinitionParser(ReferenceBean.class, false));
         registerBeanDefinitionParser("annotation", new AnnotationBeanDefinitionParser());

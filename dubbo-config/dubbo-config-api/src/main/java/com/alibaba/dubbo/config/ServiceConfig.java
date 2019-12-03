@@ -477,7 +477,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
         String host = this.findConfigedHosts(protocolConfig, registryURLs, map);
         Integer port = this.findConfigedPorts(protocolConfig, name, map);
-        //dubbo在对外暴露服务的时候，会把当前暴露的服务封装成一个URL注册到注册中心，下面就是将配置的参数拼接成了URL
+        /**
+         * 上面的map是为了在生成URL的时候，添加参数，在这里new URL的时候，把这些参数传进去了
+         * 这里的URL其实就是往ZK注册时，需要用到的URL地址
+         */
         URL url = new URL(name, host, port, (contextPath == null || contextPath.length() == 0 ? "" : contextPath + "/") + path, map);
 
         if (ExtensionLoader.getExtensionLoader(ConfiguratorFactory.class)
@@ -486,6 +489,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                     .getExtension(url.getProtocol()).getConfigurator(url).configure(url);
         }
 
+        //在dubbo暴露服务时，可以指定scope范围(远程、本地)
         String scope = url.getParameter(Constants.SCOPE_KEY);
         // don't export when none is configured
         /**
@@ -496,6 +500,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (!Constants.SCOPE_NONE.toString().equalsIgnoreCase(scope)) {
 
             // export to local if the config is not remote (export to remote only when config is remote)
+            //如果只暴露到本地，会把URL中ip替换成127.0.0.1，端口替换为0；协议替换为injvm
             if (!Constants.SCOPE_REMOTE.toString().equalsIgnoreCase(scope)) {
                 exportLocal(url);
             }

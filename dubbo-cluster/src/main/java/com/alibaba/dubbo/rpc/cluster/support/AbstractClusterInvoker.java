@@ -142,6 +142,10 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         if (loadbalance == null) {
             loadbalance = ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension(Constants.DEFAULT_LOADBALANCE);
         }
+        /**
+         * 这里的意思是：先从所有的服务提供者中根据负载均衡策略，找到一个提供者
+         *  再判断这个提供者是否在不可用的集合中，如果在，就重新select
+         */
         Invoker<T> invoker = loadbalance.select(invokers, getUrl(), invocation);
 
         //If the `invoker` is in the  `selected` or invoker is unavailable && availablecheck is true, reselect.
@@ -235,12 +239,15 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
             ((RpcInvocation) invocation).addAttachments(contextAttachments);
         }
 
+        //这里调用的是RegistryDirectory.doList()方法，会对服务提供者进行过滤
         List<Invoker<T>> invokers = list(invocation);
         if (invokers != null && !invokers.isEmpty()) {
+            //这里是找出当前配置的负载均衡策略，默认是随机
             loadbalance = ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension(invokers.get(0).getUrl()
                     .getMethodParameter(RpcUtils.getMethodName(invocation), Constants.LOADBALANCE_KEY, Constants.DEFAULT_LOADBALANCE));
         }
         RpcUtils.attachInvocationIdIfAsync(getUrl(), invocation);
+        //这里是真正执行调用方法的地方
         return doInvoke(invocation, invokers, loadbalance);
     }
 
