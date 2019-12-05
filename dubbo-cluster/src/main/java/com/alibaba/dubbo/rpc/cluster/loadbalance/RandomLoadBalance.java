@@ -33,6 +33,23 @@ public class RandomLoadBalance extends AbstractLoadBalance {
 
     private final Random random = new Random();
 
+    /**
+     * @param invokers
+     * @param url
+     * @param invocation
+     * @param <T>
+     * @return
+     *
+     * sameWeight:只要这个值为false，就表示当前所有invoker对应的权重不是全部相同
+     *  sameWeight && i > 0 && weight != getWeight(invokers.get(i - 1), invocation)
+     *  只要i和i-1对应的权重不同，这个值就是false，就会生成一个随机数，然后判断在哪个范围内：
+     *   比如说：A/B/C三个invoker，对应的权重分别是 3 5 2；
+     *    这时候生成一个随机数，5，那么
+     *      1. 5 - 3 = 2； 2 > 0 继续减
+     *      2. 2 - 5 = -3; < 0;这时候就表示要返回第二个invoker，所以，invoker权重越大，返回的几率越大
+     *
+     *   如果所有的invoker权重都一样，那就随机返回一个
+     * */
     @Override
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
         int length = invokers.size(); // Number of invokers

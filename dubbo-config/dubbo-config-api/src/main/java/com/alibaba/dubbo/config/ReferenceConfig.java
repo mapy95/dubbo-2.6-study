@@ -409,7 +409,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 List<Invoker<?>> invokers = new ArrayList<Invoker<?>>();
                 URL registryURL = null;
                 for (URL url : urls) {
-                    //获取invoker 对象；主要是想注册中心注册消费者的URL，订阅服务提供者
+                    //获取invoker 对象；主要是向注册中心注册消费者的URL，订阅服务提供者
                     invokers.add(refprotocol.refer(interfaceClass, url));
                     if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
                         registryURL = url; // use last registry url
