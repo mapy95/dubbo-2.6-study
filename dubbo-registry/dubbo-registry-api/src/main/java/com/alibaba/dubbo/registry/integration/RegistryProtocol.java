@@ -137,6 +137,7 @@ public class RegistryProtocol implements Protocol {
         //导出服务，创建nettyServer
         final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker);
 
+        //获取注册中心的URL， zookeeper://ip:port/xxxxx
         URL registryUrl = getRegistryUrl(originInvoker);
 
         //registry provider
@@ -324,7 +325,7 @@ public class RegistryProtocol implements Protocol {
          * /dubbo/com.alibaba.dubbo.demo.DemoService/providers
          * /dubbo/com.alibaba.dubbo.demo.DemoService/configurators
          * /dubbo/com.alibaba.dubbo.demo.DemoService/routers
-         * 订阅了这三个目录的信息
+         * 订阅了这三个目录的信息,当目录信息发生变化时，自动更新
          */
         directory.subscribe(subscribeUrl.addParameter(Constants.CATEGORY_KEY,
                 Constants.PROVIDERS_CATEGORY

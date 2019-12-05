@@ -46,7 +46,18 @@ public abstract class AbstractLoadBalance implements LoadBalance {
 
     protected abstract <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation);
 
+    /**
+     *
+     * @param invoker
+     * @param invocation
+     * @return
+     *
+     * timestamp 服务启动时间
+     * uptime 系统运行时间
+     * warmup 服务预热时间
+     */
     protected int getWeight(Invoker<?> invoker, Invocation invocation) {
+        //从URL中获取权重weight配置值
         int weight = invoker.getUrl().getMethodParameter(invocation.getMethodName(), Constants.WEIGHT_KEY, Constants.DEFAULT_WEIGHT);
         if (weight > 0) {
             long timestamp = invoker.getUrl().getParameter(Constants.REMOTE_TIMESTAMP_KEY, 0L);

@@ -25,7 +25,7 @@ import java.util.Random;
 
 /**
  * random load balance.
- *
+ * 加权随机算法
  */
 public class RandomLoadBalance extends AbstractLoadBalance {
 
@@ -33,6 +33,16 @@ public class RandomLoadBalance extends AbstractLoadBalance {
 
     private final Random random = new Random();
 
+    /**
+     * @param invokers
+     * @param url
+     * @param invocation
+     * @param <T>
+     * @return
+     *
+     * 获取到当前invokers的长度，遍历，获取到每个invoker的权重
+     *
+     */
     @Override
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
         int length = invokers.size(); // Number of invokers

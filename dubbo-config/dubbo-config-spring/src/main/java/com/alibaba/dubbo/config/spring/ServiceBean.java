@@ -268,6 +268,7 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
     public void export() {
         super.export();
         // Publish ServiceBeanExportedEvent
+        //服务暴露之后，会发送一个事件，通知服务消费者重新获取服务列表信息
         publishExportEvent();
     }
 
